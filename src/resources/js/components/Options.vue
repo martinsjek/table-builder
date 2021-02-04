@@ -36,6 +36,9 @@ export default {
     }
     .remove{
       fill: red;
+      position: relative;
+      top:1px;
+      left:1px;
     }
   }
 </style>
