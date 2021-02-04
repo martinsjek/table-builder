@@ -9,6 +9,7 @@
       <div v-else>
         <td v-for="(colItem, colIndex) in item">
           <input type="text" v-model="item[colIndex]">
+          <Options class="hide bottom" :remove="true" @remove="deleteColumn(colIndex)" v-if="table.length === index + 1 && colIndex > 0" />
         </td>
       </div>
       <Options class="hide right" :remove="true" @remove="deleteRow(index)" v-if="index > 0" />
@@ -28,7 +29,7 @@ export default {
     return {
       table: [
         {
-          0 : 'Value 1'
+          0 : ''
         }
       ],
     }
@@ -48,7 +49,7 @@ export default {
     addColumn() {
       let columnCount = Object.keys(this.table[0]).length;
       for(let i = 0; i < this.table.length; i++){
-        this.table[i][columnCount] = `val ${columnCount}`;
+        this.table[i][columnCount] = '';
         this.$forceUpdate()
       }
     },
@@ -58,7 +59,13 @@ export default {
     },
 
     deleteColumn(index) {
-
+      for(let i in this.table){
+        if(typeof this.table[i][index] !== 'undefined'){
+          console.log(typeof this.table[i][index]);
+          delete this.table[i][index];
+        }
+      }
+      this.$forceUpdate()
     },
   }
 }
@@ -66,7 +73,7 @@ export default {
 
 <style lang="scss">
   .hide{
-    display: none;
+    display: none!important;
   }
   table{
     position: relative;
@@ -89,7 +96,17 @@ export default {
       position: relative;
       &:hover{
         > .options{
-          display: block;
+          display: block!important;
+          z-index: 1;
+          background: white;
+        }
+      }
+    }
+    th, td{
+      position: relative;
+      &:hover{
+        > .options{
+          display: block!important;
           z-index: 1;
           background: white;
         }
