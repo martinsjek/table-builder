@@ -2,17 +2,13 @@
   <div class="table">
     <table>
       <tr v-for="(item, index) in table">
-        <div v-if="index === 0">
-          <th v-for="(colItem, colIndex) in item">
-            <input type="text" v-model="item[colIndex]">
-          </th>
-        </div>
-        <div v-else>
-          <td v-for="(colItem, colIndex) in item">
-            <input type="text" v-model="item[colIndex]">
-            <Options class="hide bottom" :remove="true" @remove="deleteColumn(colIndex)" v-if="table.length === index + 1 && colIndex > 0" />
-          </td>
-        </div>
+        <th v-for="(colItem, colIndex) in item" v-if="index === 0">
+          <vue-pell-editor v-model="item[colIndex]" :actions="editorOptions" placeholder=""/>
+        </th>
+        <td v-for="(colItem, colIndex) in item" v-if="index !== 0">
+          <vue-pell-editor v-model="item[colIndex]" :actions="editorOptions" placeholder=""/>
+          <Options class="hide bottom" :remove="true" @remove="deleteColumn(colIndex)" v-if="table.length === index + 1 && colIndex > 0" />
+        </td>
         <Options class="hide right" :remove="true" @remove="deleteRow(index)" v-if="index > 0" />
       </tr>
       <Options class="bottom" :add="true" @add="addRow" />
@@ -34,6 +30,11 @@ export default {
         [
             ''
         ]
+      ],
+      editorOptions: [
+        'bold',
+        'underline',
+        'link'
       ],
     }
   },
@@ -72,7 +73,7 @@ export default {
 }
 </script>
 
-<style lang="scss" scoped>
+<style lang="scss">
   .hide{
     display: none!important;
   }
@@ -80,12 +81,25 @@ export default {
     border:none;
     outline:none;
   }
+  .pell-actionbar{
+    font-size: 12px;
+    .pell-button{
+      height: 20px;
+      padding: 0 2px;
+    }
+  }
+  .pell-content{
+    min-height: 50px;
+    height: auto!important;
+  }
   table{
     border-top: 1px solid black;
     border-left: 1px solid black;
     border-right: 1px solid black;
     position: relative;
     border-collapse: collapse;
+    table-layout: fixed ;
+    width: calc(100% - 50px);
     .options{
       position: absolute;
       &.bottom{
@@ -119,6 +133,7 @@ export default {
     }
     th, td{
       position: relative;
+      width: 100%;
       &:not(:last-child){
         border-right: 1px solid black;
       }
