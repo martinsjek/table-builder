@@ -1,19 +1,20 @@
 <template>
   <table>
-    <tr v-for="i in rowCount">
-      <div v-if="i === 1">
-        <th v-for="j in columnCount">
-          <input type="text">
+    <tr v-for="(item, index) in table">
+      <div v-if="index === 0">
+        <th v-for="(colItem, colIndex) in item">
+          <input type="text" v-model="item[colIndex]">
         </th>
       </div>
       <div v-else>
-        <td v-for="j in columnCount">
-          <input type="text">
+        <td v-for="(colItem, colIndex) in item">
+          <input type="text" v-model="item[colIndex]">
         </td>
       </div>
+      <Options class="hide right" :remove="true" @remove="deleteRow(index)" v-if="index > 0" />
     </tr>
-    <Options class="bottom" @add="addRow" @remove="deleteRow" />
-    <Options class="right" @add="addColumn" @remove="deleteColumn" />
+    <Options class="bottom" :add="true" @add="addRow" />
+    <Options class="right" :add="true" @add="addColumn" />
   </table>
 </template>
 
@@ -25,31 +26,48 @@ export default {
   },
   data() {
     return {
-      rowCount: 1,
-      columnCount: 1
+      table: [
+        {
+          0 : 'Value 1'
+        }
+      ],
     }
   },
   methods: {
     addRow() {
-      this.rowCount += 1;
+      let rowCount = Object.keys(this.table).length;
+      let lastRow = this.table[rowCount - 1];
+
+      let insertData = {};
+      for(let i in lastRow){
+        insertData[i] = '';
+      }
+      this.table.push(insertData);
     },
 
     addColumn() {
-      this.columnCount += 1;
+      let columnCount = Object.keys(this.table[0]).length;
+      for(let i = 0; i < this.table.length; i++){
+        this.table[i][columnCount] = `val ${columnCount}`;
+        this.$forceUpdate()
+      }
     },
 
     deleteRow(index) {
-
+      this.table.splice(index,1);
     },
 
     deleteColumn(index) {
 
-    }
+    },
   }
 }
 </script>
 
 <style lang="scss">
+  .hide{
+    display: none;
+  }
   table{
     position: relative;
     .options{
@@ -65,6 +83,16 @@ export default {
         right:0;
         transform: translateX(100%) translateY(-50%);
         top:50%;
+      }
+    }
+    tr{
+      position: relative;
+      &:hover{
+        > .options{
+          display: block;
+          z-index: 1;
+          background: white;
+        }
       }
     }
   }
