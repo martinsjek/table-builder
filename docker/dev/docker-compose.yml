@@ -1,0 +1,39 @@
+version: '3'
+services:
+  db:
+    container_name: db
+    image: postgres:13
+    environment:
+      POSTGRES_USER: root
+      POSTGRES_DB: lau
+      POSTGRES_PASSWORD: toor
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    ports:
+      - 5432:5432
+    restart: unless-stopped
+    networks:
+      network:
+  webserver:
+    container_name: webserver
+    image: raraworks/dev_stack
+    volumes:
+      - ../../src:/var/www/html
+      - ./conf.d:/etc/nginx/conf.d
+      - ./certs:/etc/ssl/private
+      - ./php-fpm/php.ini:/etc/php/7.4/fpm/php.ini
+    ports:
+      - 80:80
+      - 443:443
+    depends_on:
+      - db
+    restart: unless-stopped
+    networks:
+      network:
+#    Uncomment two following lines on linux and append with your host main IP to enable Xdebug
+    extra_hosts:
+      - "host.docker.internal:192.168.1.126"
+volumes:
+  db_data:
+networks:
+  network:
